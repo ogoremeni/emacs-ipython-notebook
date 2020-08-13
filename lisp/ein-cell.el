@@ -883,12 +883,7 @@ If END is non-`nil', return the location of next element."
 (cl-defmethod ein:cell-append-pyout ((cell ein:codecell) json)
   "Insert pyout type output in the buffer.
 Called from ewoc pretty printer via `ein:cell-insert-output'."
-  (ein:insert-read-only (format "Out [%s]:"
-                                (or (plist-get json :prompt_number) " "))
-                        'font-lock-face 'ein:cell-output-prompt)
-  (ein:insert-read-only "\n")
-  (ein:cell-append-mime-type json (slot-value cell 'dynamic))
-  (ein:insert-read-only "\n"))
+  (ein:cell-append-stream-text-fontified (or (plist-get json :text) "") json))
 
 (cl-defmethod ein:cell-append-pyerr ((cell ein:codecell) json)
   "Insert pyerr type output in the buffer.
@@ -899,11 +894,8 @@ Called from ewoc pretty printer via `ein:cell-insert-output'."
         (let ((tb (plist-get json :traceback))
               (level ein:cell-traceback-level))
           (if (and level (> (- (length tb) 2) level))
-              (cons (substitute-command-keys
-                     "\nTruncated Traceback (Use \\[ein:tb-show] to view full TB):")
-                    (last tb (1+ level)))
+              (last tb (1+ level)))
             tb)))
-  (ein:insert-read-only "\n"))
 
 (ein:deflocal ein:%cell-append-stream-last-cell% nil
   "The last cell in which `ein:cell-append-stream' is used.")
