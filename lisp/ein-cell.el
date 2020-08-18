@@ -883,7 +883,7 @@ If END is non-`nil', return the location of next element."
 (cl-defmethod ein:cell-append-pyout ((cell ein:codecell) json)
   "Insert pyout type output in the buffer.
 Called from ewoc pretty printer via `ein:cell-insert-output'."
-  (ein:cell-append-stream-text-fontified (or (plist-get json :text) "") json))
+  (ein:cell-append-mime-type json (slot-value cell 'dynamic)))
 
 (cl-defmethod ein:cell-append-pyerr ((cell ein:codecell) json)
   "Insert pyerr type output in the buffer.
@@ -1004,7 +1004,7 @@ prettified text thus be used instead of HTML type."
      ((html text/html)
       (funcall (ein:output-area-get-html-renderer) (plist-get json type)))
      ((latex text/latex text text/plain)
-      (ein:insert-read-only (plist-get json type)))
+      (ein:cell-append-stream-text-fontified (or (plist-get json :text) "") json))
      ((svg image/svg+xml)
       (ein:insert-image value (ein:fix-mime-type key) t))
      ((png image/png jpeg image/jpeg)
